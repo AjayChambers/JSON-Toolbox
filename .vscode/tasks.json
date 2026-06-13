@@ -1,0 +1,73 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "BUILD JBOX (Debug@Windows-x86_64)",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "Debug-build-config-windows-x86_64"
+            ],
+            "type": "shell",
+            "problemMatcher": [],
+            "presentation": {
+                "group": "Windows-Debug",
+                "preserveTerminalName": true,
+                "focus": true,
+                "clear": true
+            },
+            "group": "build"
+        },
+        {
+            "label": "BUILD JBOX (Release@Windows-x86_64)",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "Release-build-config-windows-x86_64"
+            ],
+            "type": "shell",
+            "problemMatcher": [],
+            "presentation": {
+                "group": "Windows-Release",
+                "preserveTerminalName": true,
+                "focus": true,
+                "clear": true
+            },
+            "group": "build"
+        },
+        {
+            "label": "CONFIGURE JBOX (Debug@Windows-x86_64)",
+            "command": "${workspaceFolder}/scripts/pwsh/jbox-config.ps1",
+            "args": ["windows-x86_64", "Debug"],
+            "type": "shell",
+            "problemMatcher": [],
+            "presentation": {
+                "group": "Windows-Debug",
+                "preserveTerminalName": true,
+                "showReuseMessage": false,
+                "echo": false,
+                "focus": true,
+                "clear": true
+            },
+            "group": "build"
+        },
+        {
+            "label": "CONFIGURE JBOX (Release@Windows-x86_64)",
+            "command": "${workspaceFolder}/scripts/pwsh/jbox-config.ps1",
+            "args": ["windows-x86_64", "Release"],
+            "type": "shell",
+            "problemMatcher": [],
+            "presentation": {
+                "group": "Windows-Release",
+                "preserveTerminalName": true,
+                "showReuseMessage": false,
+                "echo": false,
+                "focus": true,
+                "clear": true
+            },
+            "group": "build"
+        }
+    ]
+}
