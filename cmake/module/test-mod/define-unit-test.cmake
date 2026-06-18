@@ -41,13 +41,23 @@
 #   prefix to avoid naming conflicts with the project's 'src'
 #   binaries and libraries."
 #################################################################
-function(define_unit_test  TARGET_NAME  FILENAME  BINARY_NAME)
-  string(PREPEND BINARY_NAME "__TEST__")
-  add_executable(${TARGET_NAME} "${TEST_DIR_}/${FILENAME}")
-  add_test(NAME ${TARGET_NAME} COMMAND ${BINARY_NAME})
+function(define_unit_test  TARGET_NAME  FILENAME  LIBS)
+    string(PREPEND BINARY_NAME "__TEST__${TARGET_NAME}")
+    add_executable(${TARGET_NAME} "${TEST_DIR_}/${FILENAME}")
+    target_link_libraries(${TARGET_NAME} PRIVATE "gtest_main" ${LIBS})
+
+    set_target_properties(
+        ${TARGET_NAME}
+        PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY ${TEST_RUNTIME_DIR_}
+            OUTPUT_NAME ${BINARY_NAME}
+    )
+
+    add_test(
+        NAME ${TARGET_NAME}
+        COMMAND ${BINARY_NAME}
+        WORKING_DIRECTORY ${TEST_RUNTIME_DIR_}
+    )
+
   gtest_discover_tests(${TARGET_NAME})
-  set_target_properties(
-      ${TARGET_NAME} PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY ${TEST_RUNTIME_DIR_}
-      OUTPUT_NAME ${BINARY_NAME})
 endfunction()
