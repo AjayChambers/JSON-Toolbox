@@ -1,11 +1,19 @@
-include("CTest")
-include("${CMAKE_SOURCE_DIR}/cmake/module/test-mod/fetch-gtest.cmake")
-include("${CMAKE_SOURCE_DIR}/cmake/module/test-mod/gtest-for-clang-cl.cmake")
-include("${CMAKE_SOURCE_DIR}/cmake/module/test-mod/define-unit-test.cmake")
+Include("CTest")
+Include(FetchContent)
 
-set_property(GLOBAL PROPERTY GTEST_NO_WARNINGS ON)
-fetch_gtest("v1.17.0")
-gtest_for_clang_cl()
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v3.15.0) # or a later release
 
-add_executable(buffer_test "buffer.test.cxx")
-target_link_libraries(buffer_test PRIVATE gtest_main )
+FetchContent_MakeAvailable(Catch2)
+
+
+add_executable(test_buffer "buffer.test.cxx")
+target_link_libraries(test_buffer PRIVATE "buffer;Catch2::Catch2WithMain")
+
+set_target_properties(
+    test_buffer
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test/bin"
+    OUTPUT_NAME              "TestBuffer")

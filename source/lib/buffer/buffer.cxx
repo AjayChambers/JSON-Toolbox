@@ -1,4 +1,4 @@
-#include "include/buffer.hxx"
+#include <buffer.hxx>
 #include <stdexcept>
 
 /** ***********************************************************************

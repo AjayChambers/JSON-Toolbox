@@ -39,7 +39,7 @@
         },
         {
             "label": "CONFIGURE JBOX (Debug@Windows-x86_64)",
-            "command": "${workspaceFolder}/scripts/pwsh/jbox-config.ps1",
+            "command": "${workspaceFolder}/tools/jbox-config.ps1",
             "args": ["windows-x86_64", "Debug"],
             "type": "shell",
             "problemMatcher": [],
@@ -55,7 +55,7 @@
         },
         {
             "label": "CONFIGURE JBOX (Release@Windows-x86_64)",
-            "command": "${workspaceFolder}/scripts/pwsh/jbox-config.ps1",
+            "command": "${workspaceFolder}/tools/jbox-config.ps1",
             "args": ["windows-x86_64", "Release"],
             "type": "shell",
             "problemMatcher": [],

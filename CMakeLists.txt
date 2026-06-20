@@ -26,6 +26,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 4.3.2)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
 list(PREPEND CMAKE_MODULE_PATH
     ${CMAKE_SOURCE_DIRECTORY}/cmake/module/
     ${CMAKE_SOURCE_DIRECTORY}/cmake/module/log-mod
@@ -35,16 +36,36 @@ list(PREPEND CMAKE_MODULE_PATH
 # include("${CMAKE_SOURCE_DIR}/cmake/config/compiler.config.cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/config/project.config.cmake")
 
-
-
 project(
     ${PROJ_NAME}
     VERSION ${PROJ_VER}
     DESCRIPTION ${PROJ_DESC}
     LANGUAGES CXX)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_options(
+        -g
+        -O0
+        -fno-inline
+        -fno-omit-frame-pointer
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wdeprecated
+        -Wno-unused-parameter
+        -std=c++23)
+endif()
+
+
+include_directories(
+    "${CMAKE_SOURCE_DIR}/include"
+    "${CMAKE_SOURCE_DIR}/source/lib/buffer/include"
+    "${CMAKE_SOURCE_DIR}/source/lib/text-file/include")
+
 add_subdirectory("source")
-add_subdirectory("include")
+
+
+
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_subdirectory(test)

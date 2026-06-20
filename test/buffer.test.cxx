@@ -1,113 +1,84 @@
+// ============================================================================
+// Unit tests for JBox::Buffer using Catch2 v3.15.0
+// ============================================================================
+
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+
 #include "buffer.hxx"
-#include "iterator.hxx"
-#include <gtest/gtest.h>
 
-using JBox::Buffer;
-using JBox::BufferIterator;
+TEST_CASE("Buffer: construction from const char*", "[buffer]") {
+    const char* raw = "hello";
+    JBox::Buffer buf(raw);
 
-// -------------------------------------------------------------
-//  Constructors
-// -------------------------------------------------------------
-TEST(BufferTest, ConstructFromCString)
-{
-    const char *raw = "hello";
-    Buffer b(raw);
-
-    EXPECT_EQ(b.size(), 5u);
-    ASSERT_NE(b.data(), nullptr);
-    EXPECT_EQ(std::string(b.data(), b.size()), "hello");
+    REQUIRE(buf.size() == 5);
+    REQUIRE(buf.data() != nullptr);
+    REQUIRE(buf[0] == 'h');
+    REQUIRE(buf[4] == 'o');
 }
 
-TEST(BufferTest, ConstructFromString)
-{
-    std::string s = "world";
-    Buffer b(s);
+TEST_CASE("Buffer: construction from std::string", "[buffer]") {
+    std::string s = "json";
+    JBox::Buffer buf(s);
 
-    EXPECT_EQ(b.size(), 5u);
-    EXPECT_EQ(std::string(b.data(), b.size()), "world");
+    REQUIRE(buf.size() == 4);
+    REQUIRE(buf.data() != nullptr);
+    REQUIRE(buf[1] == 's');
 }
 
-TEST(BufferTest, ConstructFromVector)
-{
-    std::vector<char> v = {'a',
-      'b',
-      'c',
-      'd'};
-    Buffer b(v);
+TEST_CASE("Buffer: construction from std::vector<char>", "[buffer]") {
+    std::vector<char> v = {'a', 'b', 'c'};
+    JBox::Buffer buf(v);
 
-    EXPECT_EQ(b.size(), 4u);
-    EXPECT_EQ(std::string(b.data(), b.size()), "abcd");
+    REQUIRE(buf.size() == 3);
+    REQUIRE(buf[2] == 'c');
 }
 
-// -------------------------------------------------------------
-//  Element Access
-// -------------------------------------------------------------
-TEST(BufferTest, OperatorIndex)
-{
-    Buffer b("json");
+TEST_CASE("Buffer: operator[] is noexcept and returns correct values", "[buffer]") {
+    JBox::Buffer buf("xyz");
 
-    EXPECT_EQ(b[0], 'j');
-    EXPECT_EQ(b[1], 's');
-    EXPECT_EQ(b[2], 'o');
-    EXPECT_EQ(b[3], 'n');
+    REQUIRE_NOTHROW(buf[0]);
+    REQUIRE(buf[0] == 'x');
+    REQUIRE(buf[1] == 'y');
+    REQUIRE(buf[2] == 'z');
 }
 
-TEST(BufferTest, AtValid)
-{
-    Buffer b("json");
+TEST_CASE("Buffer: at() throws on out-of-range", "[buffer]") {
+    JBox::Buffer buf("abc");
 
-    EXPECT_EQ(b.at(0), 'j');
-    EXPECT_EQ(b.at(3), 'n');
+    REQUIRE(buf.at(0) == 'a');
+    REQUIRE(buf.at(2) == 'c');
+
+    REQUIRE_THROWS_AS(buf.at(3), std::out_of_range);
+    REQUIRE_THROWS_AS(buf.at(100), std::out_of_range);
 }
 
-TEST(BufferTest, AtThrowsOnOutOfRange)
-{
-    Buffer b("json");
+TEST_CASE("Buffer: iterators traverse the buffer correctly", "[buffer]") {
+    JBox::Buffer buf("test");
 
-    EXPECT_THROW(b.at(4), std::out_of_range);
-    EXPECT_THROW(b.at(100), std::out_of_range);
+    std::string collected;
+    for (auto it = buf.begin(); it != buf.end(); ++it) {
+        collected.push_back(*it);
+    }
+
+    REQUIRE(collected == "test");
 }
 
-// -------------------------------------------------------------
-//  Iterators
-// -------------------------------------------------------------
-TEST(BufferTest, BeginEndIteration)
-{
-    Buffer b("xyz");
+TEST_CASE("Buffer: iter_at() returns correct iterator and throws on invalid index", "[buffer]") {
+    JBox::Buffer buf("json");
 
-    auto it = b.begin();
-    auto ed = b.end();
+    auto it = buf.iter_at(2);
+    REQUIRE(*it == 's');
 
-    ASSERT_EQ(std::distance(it, ed), 3);
-    EXPECT_EQ(*it, 'x');
-    EXPECT_EQ(*(it + 1), 'y');
-    EXPECT_EQ(*(it + 2), 'z');
+    REQUIRE_THROWS_AS(buf.iter_at(4), std::out_of_range);
+    REQUIRE_THROWS_AS(buf.iter_at(100), std::out_of_range);
 }
 
-TEST(BufferTest, IterAtValid)
-{
-    Buffer b("xyz");
+TEST_CASE("Buffer: begin() and end() produce correct distance", "[buffer]") {
+    JBox::Buffer buf("hello");
 
-    EXPECT_EQ(*(b.iter_at(0)), 'x');
-    EXPECT_EQ(*(b.iter_at(1)), 'y');
-    EXPECT_EQ(*(b.iter_at(2)), 'z');
-}
+    auto b = buf.begin();
+    auto e = buf.end();
 
-TEST(BufferTest, IterAtThrows)
-{
-    Buffer b("xyz");
-
-    EXPECT_THROW(b.iter_at(3), std::out_of_range);
-    EXPECT_THROW(b.iter_at(10), std::out_of_range);
-}
-
-// -------------------------------------------------------------
-//  Data + Size
-// -------------------------------------------------------------
-TEST(BufferTest, DataAndSize)
-{
-    Buffer b("12345");
-
-    EXPECT_EQ(b.size(), 5u);
-    EXPECT_EQ(std::string(b.data(), b.size()), "12345");
+    REQUIRE(std::distance(b, e) == 5);
 }
